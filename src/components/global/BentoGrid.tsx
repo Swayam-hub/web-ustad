@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface BentoCardProps {
   children: React.ReactNode;
   className?: string;
