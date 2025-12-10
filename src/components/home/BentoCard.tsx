@@ -10,7 +10,7 @@ interface BentoCardProps {
 }
 
 
-const BentoCard: React.FC<BentoCardProps> = ({ children, className, title, subtitle, icon: Icon, delay = 0 }) => (
+const BentoCard = ({ children, className, title, subtitle, icon: Icon, delay = 0 }: BentoCardProps) => (
   <div 
     className={cn(
       "group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/40 p-6 backdrop-blur-xl transition-all hover:border-white/20 hover:bg-neutral-900/60",

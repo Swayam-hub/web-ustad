@@ -101,7 +101,7 @@ const PasswordStrengthMeter = ({ password }: PasswordStrengthMeterProps) => {
               duration: 2,
               ease: "linear",
             }}
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent pointer-events-none"
           />
         )}
       </div>
@@ -126,7 +126,7 @@ const PasswordStrengthMeter = ({ password }: PasswordStrengthMeterProps) => {
             {check.met ? (
               <Check className="h-3.5 w-3.5 text-green-500" />
             ) : (
-              <div className="h-1.5 w-1.5 rounded-full bg-neutral-600 ml-[6px]" />
+              <div className="h-1.5 w-1.5 rounded-full bg-neutral-600 ml-1.5" />
             )}
 
             <span

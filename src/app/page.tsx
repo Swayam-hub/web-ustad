@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import Button from "@/components/global/Button";
 import Footer from "@/components/global/Footer";
 import Header from "@/components/global/Header";
-import BentoCard from "@/components/global/BentoCard";
+import BentoCard from "@/components/home/BentoCard";
 
 const movingDotsStyles: string = `
   @keyframes dot-pan {
