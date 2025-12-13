@@ -16,7 +16,6 @@ import {
   Rocket,
   Link,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Button from "@/components/global/Button";
 import Footer from "@/components/global/Footer";
 import Header from "@/components/global/Header";
@@ -33,7 +32,6 @@ const movingDotsStyles: string = `
   }
 `;
 
-// Feature data for the new section
 const features = [
   {
     icon: Zap,
@@ -72,15 +70,12 @@ const features = [
 export default function Homepage() {
   const [loadingState, setLoadingState] = useState<boolean>(false);
 
-  // Simulate a loading action for the demo button
   const handleDemoClick = (): void => {
     setLoadingState(true);
     setTimeout(() => setLoadingState(false), 2000);
   };
 
-  // Mouse tracking for spotlight effect on cards
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>): void => {
-    // We cast to HTMLCollectionOf<HTMLElement> because getElementsByClassName returns a generic HTMLCollection
     const cards = document.getElementsByClassName(
       "group"
     ) as HTMLCollectionOf<HTMLElement>;
@@ -99,18 +94,12 @@ export default function Homepage() {
       className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30"
       onMouseMove={handleMouseMove}
     >
-      {/* Inject custom animation styles for the moving dots */}
       <style>{movingDotsStyles}</style>
-
-      {/* Background Ambience */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Soft Colored Blobs */}
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-900/10 blur-[120px]" />
-
-        {/* Dot Matrix Pattern with Vignette Mask - Reduced Opacity and Diagonal Panning */}
         <div
-          className="absolute inset-0 opacity-[0.15]" // Reduced Opacity
+          className="absolute inset-0 opacity-[0.15]"
           style={{
             backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`,
             backgroundSize: "32px 32px",
@@ -118,12 +107,10 @@ export default function Homepage() {
               "radial-gradient(ellipse at center, black 40%, transparent 70%)",
             WebkitMaskImage:
               "radial-gradient(ellipse at center, black 40%, transparent 70%)",
-            animation: "dot-pan 30s linear infinite", // Speed maintained for clear movement
+            animation: "dot-pan 30s linear infinite",
             WebkitAnimation: "dot-pan 30s linear infinite",
           }}
         />
-
-        {/* Noise Texture Overlay */}
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -136,7 +123,6 @@ export default function Homepage() {
     
 
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-12 flex flex-col items-center">
-        {/* HERO SECTION */}
         <div className="text-center max-w-3xl mb-24 space-y-8">
           <div className="inline-flex items-center rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-300 backdrop-blur-md">
             <Sparkles className="mr-2 h-3 w-3" />
@@ -155,7 +141,6 @@ export default function Homepage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {/* DEMONSTRATING THE BUTTON STATES */}
             <Button
               variant="default"
               size="lg"
@@ -176,19 +161,14 @@ export default function Homepage() {
             No credit card required • Unlimited projects • Dark mode included
           </p>
         </div>
-
-        {/* BENTO GRID SECTION */}
         <div className="w-full grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4 h-auto md:h-[800px] mb-32">
-          {/* CARD 1: THE BUILDER (Large) */}
           <BentoCard
             title="Visual Builder"
             subtitle="Drag, drop, and design without limits."
             icon={LayoutTemplate}
             className="md:col-span-3 md:row-span-2"
           >
-            {/* MOCK UI: BUILDER */}
             <div className="absolute inset-0 bg-neutral-900 flex flex-col">
-              {/* Mock Toolbar */}
               <div className="h-8 border-b border-white/5 flex items-center px-4 gap-2">
                 <div className="flex gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
@@ -201,7 +181,6 @@ export default function Homepage() {
               </div>
 
               <div className="flex flex-1">
-                {/* Mock Sidebar */}
                 <div className="w-12 border-r border-white/5 flex flex-col items-center py-4 gap-4">
                   {[1, 2, 3, 4].map((i) => (
                     <div
@@ -210,7 +189,6 @@ export default function Homepage() {
                     />
                   ))}
                 </div>
-                {/* Mock Canvas */}
                 <div className="flex-1 p-8 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] bg-size-[16px_16px]">
                   <div className="w-full h-full border-2 border-dashed border-blue-500/30 rounded-lg flex items-center justify-center relative group">
                     <div className="absolute -top-2.5 left-5 bg-blue-600 text-[10px] px-2 py-0.5 rounded text-white opacity-0 group-hover:opacity-100 transition-opacity">
@@ -231,8 +209,6 @@ export default function Homepage() {
                         Call to Action
                       </Button>
                     </div>
-
-                    {/* Floating Cursor Animation */}
                     <div className="absolute bottom-10 right-10 animate-bounce">
                       <MousePointer2 className="text-blue-500 h-6 w-6 fill-blue-500/20" />
                       <div className="ml-4 mt-1 bg-blue-500 text-[10px] text-white px-1.5 rounded">
@@ -241,7 +217,6 @@ export default function Homepage() {
                     </div>
                   </div>
                 </div>
-                {/* Mock Properties Panel */}
                 <div className="w-48 border-l border-white/5 hidden lg:block bg-neutral-900/80 p-4 space-y-4">
                   <div className="h-2 w-1/2 bg-neutral-800 rounded mb-4" />
                   <div className="space-y-2">
@@ -265,8 +240,6 @@ export default function Homepage() {
               </div>
             </div>
           </BentoCard>
-
-          {/* CARD 2: THE CRM (Tall) */}
           <BentoCard
             title="Active Pipeline"
             subtitle="Real-time lead capture."
@@ -323,8 +296,6 @@ export default function Homepage() {
                   </span>
                 </div>
               ))}
-
-              {/* Simulated Incoming Lead Animation */}
               <div className="mt-auto p-3 rounded-lg border border-blue-500/30 bg-blue-500/10 flex items-center gap-3 animate-pulse">
                 <div className="h-2 w-2 rounded-full bg-blue-400 animate-ping" />
                 <span className="text-xs text-blue-200">
@@ -333,8 +304,6 @@ export default function Homepage() {
               </div>
             </div>
           </BentoCard>
-
-          {/* CARD 3: ANALYTICS (Small) */}
           <BentoCard
             title="Conversion Rate"
             subtitle="+24% vs last month"
@@ -351,8 +320,6 @@ export default function Homepage() {
               ))}
             </div>
           </BentoCard>
-
-          {/* CARD 4: AUTOMATION (Small) */}
           <BentoCard
             title="AI Actions"
             subtitle="Auto-reply to leads"
@@ -381,8 +348,6 @@ export default function Homepage() {
               </div>
             </div>
           </BentoCard>
-
-          {/* CARD 5: INTEGRATIONS (Wide) */}
           <BentoCard
             title="Native Integrations"
             subtitle="Works with your stack"
@@ -390,7 +355,6 @@ export default function Homepage() {
             className="md:col-span-2"
           >
             <div className="absolute inset-0 flex items-center justify-around px-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-              {/* Simple SVG Placeholders for Logos */}
               <div className="h-8 w-8 rounded bg-white/20" />
               <div className="h-8 w-8 rounded bg-white/20" />
               <div className="h-8 w-8 rounded bg-white/20" />
@@ -399,8 +363,6 @@ export default function Homepage() {
             </div>
           </BentoCard>
         </div>
-
-        {/* NEW SECTION 1: FEATURES GRID */}
         <section className="py-24 w-full">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <h2 className="text-4xl font-bold bg-linear-to-r from-white to-neutral-500 bg-clip-text text-transparent">
@@ -432,10 +394,8 @@ export default function Homepage() {
           </div>
         </section>
 
-        {/* NEW SECTION 2: TESTIMONIAL / FINAL CTA */}
         <section className="py-24 w-full">
           <div className="relative p-12 md:p-16 rounded-3xl bg-neutral-900/50 border border-neutral-800 backdrop-blur-md overflow-hidden">
-            {/* Background lighting effect */}
             <div
               className="absolute inset-0 bg-white/5 opacity-10"
               style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 30%, 0% 30%)" }}
@@ -445,7 +405,6 @@ export default function Homepage() {
               <p className="text-2xl md:text-3xl font-light italic text-neutral-200 leading-relaxed">
                 "Switching to Web Ustad saved our team $5,000 a month and cut
                 our deployment time by 80%. It's the future of web building."{" "}
-                {/* Updated Name */}
               </p>
               <div className="pt-4">
                 <p className="font-semibold text-white">
