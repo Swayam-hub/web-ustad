@@ -1,9 +1,12 @@
-import { auth } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 export async function proxy(req: NextRequest) {
-  const session = await auth(req);
+  const session = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
   const url = req.nextUrl.clone();
   if (url.pathname.startsWith("/dashboard")) {
     if (!session?.user) {
@@ -12,10 +15,10 @@ export async function proxy(req: NextRequest) {
     }
   }
   if (url.pathname.startsWith("/admin")) {
-    if (session?.user?.role !== "ADMIN") {
-      url.pathname = "/unauthorized";
-      return NextResponse.redirect(url);
-    }
+    // if (session?.user?.role !== "ADMIN") {
+    //   url.pathname = "/unauthorized";
+    //   return NextResponse.redirect(url);
+    // }
   }
   return NextResponse.next();
 }

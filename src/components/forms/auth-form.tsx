@@ -18,10 +18,12 @@ import PasswordStrengthMeter from "./password-strength";
 import { useMutationData } from "@/hooks/useMutationData";
 import { authAction } from "@/actions/auth.action";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 type AuthMode = "signIn" | "signUp" | "forgot" | "reset";
 const AuthForm = () => {
+  const router = useRouter();
 const [mode, setMode] = useState<AuthMode>("signUp");
-
   const isSignUp = mode === "signUp";
   const isSignIn = mode === "signIn";
   const isForgot = mode === "forgot";
@@ -91,63 +93,58 @@ useEffect(() => {
   setValue("mode", mode);
 }, [mode, setValue]);
 
-// const onSubmit = (data: AuthFormValues) => {
-//   switch (data.mode) {
-//     case "signIn":
-//       mutate({
-//         mode: "signIn",
-//         email: data.email,
-//         password: data.password,
-//       });
-//       break;
+const onSubmit = async (data: AuthFormValues) => {
+  try {
+    if (data.mode === "signIn") {
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
 
-//     case "signUp":
-//       mutate({
-//         mode: "signUp",
-//         name: data.name,
-//         email: data.email,
-//         password: data.password,
-//         confirmPassword: data.confirmPassword,
-//       });
-//       break;
-
-//     case "forgot":
-//       mutate({
-//         mode: "forgot",
-//         email: data.email,
-//       });
-//       break;
-
-//     case "reset":
-//       mutate({
-//         mode: "reset",
-//         token: data.token,
-//         password: data.password,
-//         confirmPassword: data.confirmPassword,
-//       });
-//       break;
-//   }
-// };
-const onSubmit = (data: AuthFormValues) => {
-  mutate(data, {
-    onSuccess: (res) => {
-      if (res.success) {
-        toast.success(res.message || "Success");
-
-        // optional: post-success actions
-        // router.push("/dashboard");
-      } else if (res.fieldErrors) {
-        Object.values(res.fieldErrors).forEach((msg) => {
-          toast.error(msg);
-        });
-      } else {
-        toast.error(res.message || "Something went wrong");
+      if (res?.error) {
+        toast.error(res.error || "Invalid email or password");
+        return;
       }
-    },
-    onError: () => {
-      toast.error("Network error. Please try again.");
-    },
-  });
+      toast.success("Logged in successfully");
+      router.push("/");
+      return;
+    }
+    mutate(data, {
+      onSuccess: async (res) => {
+        if (res.success) {
+          toast.success(res.message || "Success");
+          if (data.mode === "signUp") {
+            const loginRes = await signIn("credentials", {
+              email: data.email,
+              password: data.password,
+              redirect: false,
+            });
+
+            if (loginRes?.error) {
+              toast.error("Signup succeeded, but auto-login failed.");
+              return;
+            }
+
+            toast.success("Logged in successfully");
+            router.push("/dashboard");
+          }
+        } else if (res.fieldErrors) {
+          Object.values(res.fieldErrors).flat().forEach((msg) => {
+            toast.error(msg);
+          });
+        } else {
+          toast.error(res.message || "Something went wrong");
+        }
+      },
+      onError: () => {
+        toast.error("Network error. Please try again.");
+      },
+    });
+  } catch (err) {
+    toast.error("Unexpected error occurred");
+    console.error(err);
+  }
 };
 
 
