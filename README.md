@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## App Navigation & Routing Logic
 
-## Getting Started
+This document explains how application navigation and route rewriting works based on:
 
-First, run the development server:
+- Subdomain presence
+- User authentication state
+- Requested pathname
+- Query / search parameters
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Subdomain Handling
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Rule**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- If a subdomain exists in the incoming request:
+  - Rewrite the request to:
 
-## Learn More
+    ```
+    /domain/{pathId}
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+  - Preserve all query/search parameters.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Purpose**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Enables tenant-based or domain-based routing.
+- Ensures deep links continue to work correctly.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. No Subdomain Present
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If no subdomain is detected, the system applies authentication-based routing.
+
+---
+
+### 3. Authentication Check
+
+#### 3.1 User is Logged In
+
+- Rewrite the request to:
+
+/agency/sign-in
+
+yaml
+Copy code
+
+**Reason**
+
+- Routes authenticated users into the agency flow.
+
+---
+
+#### 3.2 User is NOT Logged In
+
+Further routing is determined by the requested pathname.
+
+---
+
+### 4. Path-Based Routing (Unauthenticated Users)
+
+#### 4.1 Public Website Access
+
+**Condition**
+
+- Pathname is:
+- `/`
+- `/site`
+
+**Action**
+
+- Rewrite to:
+
+/site
+
+markdown
+Copy code
+
+**Reason**
+
+- User intends to access the public website.
+- Provides a consistent public entry point.
+
+---
+
+#### 4.2 Dashboard / Protected Routes
+
+**Condition**
+
+- Pathname is NOT `/` or `/site`
+- Indicates access to dashboard or protected content
+
+**Action**
+
+- Rewrite to:
+
+{originalPath}
+
+pgsql
+Copy code
+
+- Preserve all query/search parameters.
+
+**Reason**
+
+- Allows downstream authentication guards to handle protection.
+- Maintains deep-link and URL integrity.
+
+---
+
+### 5. Routing Flow Summary
+
+```text
+Incoming Request
+│
+├─ Subdomain exists?
+│   ├─ Yes → Rewrite to /domain/{pathId} + query params
+│   └─ No
+│
+├─ Is user logged in?
+│   ├─ Yes → Rewrite to /agency/sign-in
+│   └─ No
+│
+├─ Path is "/" or "/site"?
+│   ├─ Yes → Rewrite to /site
+│   └─ No → Rewrite to original path + query params
+
+## App Navigation Architecture
+
+```mermaid
+flowchart TD
+    A[Incoming Request] --> B{Subdomain Exists?}
+
+    B -->|Yes| C[Rewrite to /domain/{pathId}\n+ Preserve Query Params]
+
+    B -->|No| D{User Logged In?}
+
+    D -->|Yes| E[Rewrite to /agency/sign-in]
+
+    D -->|No| F{Pathname is "/" or "/site"?}
+
+    F -->|Yes| G[Rewrite to /site]
+
+    F -->|No| H[Rewrite to Original Path\n+ Preserve Query Params]
+
+    C --> I[Next.js Route Handler]
+    E --> I
+    G --> I
+    H --> I

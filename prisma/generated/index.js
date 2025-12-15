@@ -102,7 +102,64 @@ exports.Prisma.UserScalarFieldEnum = {
   name: 'name',
   image: 'image',
   trial: 'trial',
+  role: 'role',
+  agencyId: 'agencyId'
+};
+
+exports.Prisma.AgencyScalarFieldEnum = {
+  id: 'id',
+  connectedAccountId: 'connectedAccountId',
+  customerId: 'customerId',
+  name: 'name',
+  agencyLogo: 'agencyLogo',
+  companyEmail: 'companyEmail',
+  companyPhone: 'companyPhone',
+  whiteLabel: 'whiteLabel',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  country: 'country',
+  goal: 'goal',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubAccountScalarFieldEnum = {
+  id: 'id',
+  connectedAccountId: 'connectedAccountId',
+  name: 'name',
+  subAccountLogo: 'subAccountLogo',
+  companyEmail: 'companyEmail',
+  companyPhone: 'companyPhone',
+  whiteLabel: 'whiteLabel',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  country: 'country',
+  goal: 'goal',
+  agencyId: 'agencyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvitationScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  agencyId: 'agencyId',
+  status: 'status',
   role: 'role'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  notification: 'notification',
+  userId: 'userId',
+  agencyId: 'agencyId',
+  subAccountId: 'subAccountId'
 };
 
 exports.Prisma.SortOrder = {
@@ -126,8 +183,18 @@ exports.Role = exports.$Enums.Role = {
   SUBACCOUNT_ADMIN: 'SUBACCOUNT_ADMIN'
 };
 
+exports.InvitationStatus = exports.$Enums.InvitationStatus = {
+  REVOKED: 'REVOKED',
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED'
+};
+
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Agency: 'Agency',
+  SubAccount: 'SubAccount',
+  Invitation: 'Invitation',
+  Notification: 'Notification'
 };
 /**
  * Create the Client
@@ -137,10 +204,10 @@ const config = {
   "clientVersion": "7.1.0",
   "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum Role {\n  AGENCY_OWNER\n  AGENCY_ADMIN\n  SUBACCOUNT_USER\n  SUBACCOUNT_ADMIN\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @default(now()) @updatedAt\n  email     String   @unique\n  password  String   @default(\"\")\n  name      String\n  image     String?\n  trial     Boolean  @default(false)\n  role      Role     @default(SUBACCOUNT_USER)\n}\n"
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum Role {\n  AGENCY_OWNER\n  AGENCY_ADMIN\n  SUBACCOUNT_USER\n  SUBACCOUNT_ADMIN\n}\n\nmodel User {\n  id            String         @id @default(uuid())\n  createdAt     DateTime       @default(now())\n  updatedAt     DateTime       @default(now()) @updatedAt\n  email         String         @unique\n  password      String         @default(\"\")\n  name          String\n  image         String?\n  trial         Boolean        @default(false)\n  role          Role           @default(SUBACCOUNT_USER)\n  agencyId      String\n  Agency        Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)\n  Notifications Notification[]\n\n  @@index([agencyId])\n}\n\nmodel Agency {\n  id                 String         @id @default(uuid())\n  connectedAccountId String?        @default(\"\")\n  customerId         String         @default(\"\")\n  name               String         @default(\"\")\n  agencyLogo         String         @db.Text\n  companyEmail       String         @db.Text\n  companyPhone       String         @default(\"\")\n  whiteLabel         Boolean        @default(true)\n  address            String         @default(\"\")\n  city               String         @default(\"\")\n  state              String         @default(\"\")\n  zipCode            String         @default(\"\")\n  country            String         @default(\"\")\n  goal               Int            @default(5)\n  users              User[]\n  createdAt          DateTime       @default(now())\n  updatedAt          DateTime       @default(now()) @updatedAt\n  SubAccount         SubAccount[]\n  Invitation         Invitation[]\n  Notifications      Notification[]\n}\n\nmodel SubAccount {\n  id                 String         @id @default(uuid())\n  connectedAccountId String?        @default(\"\")\n  name               String         @default(\"\")\n  subAccountLogo     String         @db.Text\n  companyEmail       String         @db.Text\n  companyPhone       String         @default(\"\")\n  whiteLabel         Boolean        @default(true)\n  address            String         @default(\"\")\n  city               String         @default(\"\")\n  state              String         @default(\"\")\n  zipCode            String         @default(\"\")\n  country            String         @default(\"\")\n  goal               Int            @default(5)\n  agencyId           String\n  Agency             Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)\n  Notifications      Notification[]\n  createdAt          DateTime       @default(now())\n  updatedAt          DateTime       @default(now()) @updatedAt\n\n  @@index([agencyId])\n}\n\nenum InvitationStatus {\n  REVOKED\n  PENDING\n  ACCEPTED\n}\n\nmodel Invitation {\n  id       String           @id @default(uuid())\n  email    String           @unique\n  agencyId String\n  Agency   Agency           @relation(fields: [agencyId], references: [id], onDelete: Cascade)\n  status   InvitationStatus @default(PENDING)\n  role     Role             @default(SUBACCOUNT_USER)\n\n  @@index([agencyId])\n}\n\nmodel Notification {\n  id           String      @id @default(uuid())\n  createdAt    DateTime    @default(now())\n  updatedAt    DateTime    @default(now()) @updatedAt\n  User         User        @relation(fields: [userId], references: [id], onDelete: Cascade)\n  Agency       Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)\n  SubAccount   SubAccount? @relation(fields: [subAccountId], references: [id], onDelete: Cascade)\n  notification String\n  userId       String\n  agencyId     String\n  subAccountId String\n\n  @@index([agencyId])\n  @@index([subAccountId])\n  @@index([userId])\n}\n"
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"trial\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"trial\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"agencyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"Agency\",\"kind\":\"object\",\"type\":\"Agency\",\"relationName\":\"AgencyToUser\"},{\"name\":\"Notifications\",\"kind\":\"object\",\"type\":\"Notification\",\"relationName\":\"NotificationToUser\"}],\"dbName\":null},\"Agency\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"connectedAccountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"customerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"agencyLogo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companyEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companyPhone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"whiteLabel\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"state\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zipCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"country\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"goal\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AgencyToUser\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"SubAccount\",\"kind\":\"object\",\"type\":\"SubAccount\",\"relationName\":\"AgencyToSubAccount\"},{\"name\":\"Invitation\",\"kind\":\"object\",\"type\":\"Invitation\",\"relationName\":\"AgencyToInvitation\"},{\"name\":\"Notifications\",\"kind\":\"object\",\"type\":\"Notification\",\"relationName\":\"AgencyToNotification\"}],\"dbName\":null},\"SubAccount\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"connectedAccountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"subAccountLogo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companyEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"companyPhone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"whiteLabel\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"state\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zipCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"country\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"goal\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"agencyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"Agency\",\"kind\":\"object\",\"type\":\"Agency\",\"relationName\":\"AgencyToSubAccount\"},{\"name\":\"Notifications\",\"kind\":\"object\",\"type\":\"Notification\",\"relationName\":\"NotificationToSubAccount\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Invitation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"agencyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"Agency\",\"kind\":\"object\",\"type\":\"Agency\",\"relationName\":\"AgencyToInvitation\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"InvitationStatus\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"}],\"dbName\":null},\"Notification\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"User\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"NotificationToUser\"},{\"name\":\"Agency\",\"kind\":\"object\",\"type\":\"Agency\",\"relationName\":\"AgencyToNotification\"},{\"name\":\"SubAccount\",\"kind\":\"object\",\"type\":\"SubAccount\",\"relationName\":\"NotificationToSubAccount\"},{\"name\":\"notification\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"agencyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"subAccountId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.compilerWasm = {
       getRuntime: async () => require('./query_compiler_bg.js'),

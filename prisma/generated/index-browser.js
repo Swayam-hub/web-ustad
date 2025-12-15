@@ -129,7 +129,64 @@ exports.Prisma.UserScalarFieldEnum = {
   name: 'name',
   image: 'image',
   trial: 'trial',
+  role: 'role',
+  agencyId: 'agencyId'
+};
+
+exports.Prisma.AgencyScalarFieldEnum = {
+  id: 'id',
+  connectedAccountId: 'connectedAccountId',
+  customerId: 'customerId',
+  name: 'name',
+  agencyLogo: 'agencyLogo',
+  companyEmail: 'companyEmail',
+  companyPhone: 'companyPhone',
+  whiteLabel: 'whiteLabel',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  country: 'country',
+  goal: 'goal',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubAccountScalarFieldEnum = {
+  id: 'id',
+  connectedAccountId: 'connectedAccountId',
+  name: 'name',
+  subAccountLogo: 'subAccountLogo',
+  companyEmail: 'companyEmail',
+  companyPhone: 'companyPhone',
+  whiteLabel: 'whiteLabel',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  country: 'country',
+  goal: 'goal',
+  agencyId: 'agencyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvitationScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  agencyId: 'agencyId',
+  status: 'status',
   role: 'role'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  notification: 'notification',
+  userId: 'userId',
+  agencyId: 'agencyId',
+  subAccountId: 'subAccountId'
 };
 
 exports.Prisma.SortOrder = {
@@ -153,8 +210,18 @@ exports.Role = exports.$Enums.Role = {
   SUBACCOUNT_ADMIN: 'SUBACCOUNT_ADMIN'
 };
 
+exports.InvitationStatus = exports.$Enums.InvitationStatus = {
+  REVOKED: 'REVOKED',
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED'
+};
+
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Agency: 'Agency',
+  SubAccount: 'SubAccount',
+  Invitation: 'Invitation',
+  Notification: 'Notification'
 };
 
 /**
