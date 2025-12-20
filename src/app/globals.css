@@ -1,9 +1,33 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-html, body {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
+/* Card glow variables */
+:root {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* Premium card glow */
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at var(--mouse-x) var(--mouse-y),
+    rgba(59, 130, 246, 0.15),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
+.glow-card:hover::before {
+  opacity: 1;
+}

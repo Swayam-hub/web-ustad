@@ -39,6 +39,28 @@ export const authSchemas = z.discriminatedUnion("mode", [
   resetSchema,
 ]);
 
+export const agencySchema = z.object({
+  name: z.string().min(3, "Agency name is required (min 3 chars)"),
+  companyEmail: z.string().email("Invalid company email address"),
+  companyPhone: z
+    .string()
+    .regex(
+      /^[\d\s\-\+\(\)]{10,18}$/,
+      "Valid 10-18 digit phone number is required"
+    ),
+  address: z.string().min(5, "Street address is required"),
+  city: z.string().min(2, "City is required"),
+  state: z.string().min(2, "State/Province is required"),
+  zipCode: z.string().min(5, "Zip/Postal code is required"),
+  country: z.string().min(2, "Country is required"),
+  goal: z.coerce
+    .number()
+    .int("Goal must be a whole number")
+    .min(1, "Goal must be at least 1")
+    .max(100, "Goal cannot exceed 100"),
+  whiteLabel: z.boolean().default(true),
+});
+export type AgencyValues = z.infer<typeof agencySchema>;
 export type SignInValues = z.infer<typeof signInSchema>;
 export type SignUpValues = z.infer<typeof signUpSchema>;
 export type ForgotValues = z.infer<typeof forgotSchema>;

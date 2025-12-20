@@ -2,6 +2,7 @@ import {
   getAuthUserDetails,
   verifyAndAcceptInvitation,
 } from "@/actions/auth.action";
+// import AgencyFormComponent from "@/components/forms/agency-form";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -42,8 +43,9 @@ const Page = async ({
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return redirect("/auth");
+    return redirect("/agency/auth");
   }
+  // return <AgencyFormComponent  />;
 };
 
 export default Page;
